@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @RestController()
 public class GameChangerController {
@@ -31,5 +33,12 @@ public class GameChangerController {
                 "/{id}").buildAndExpand(created.getIdentifier()).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping(value = "game/{identifier}")
+    public GameChanger findGameChanger(@PathVariable Integer identifier) throws ExecutionException, InterruptedException, GameChangerException {
+        Future<GameChanger> gameChangerFuture = this.gameChanger.getTheGameChanger(identifier);
+
+        return gameChangerFuture.get();
     }
 }

@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,6 +25,8 @@ import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = GameChangerController.class, secure = false)
@@ -67,5 +71,21 @@ public class GameChangerControllerTest {
 
         assertEquals("http://localhost/game/1515",
                 response.getHeader(HttpHeaders.LOCATION));
+    }
+
+    @Test
+    public void findGameChanger_test() throws Exception {
+        GameChanger result = new GameChanger();
+        Mockito.when(gameChangerService.getTheGameChanger(eq(1515))).thenReturn(AsyncResult.forValue(result));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/game/1515")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+
+
+        JSONAssert.assertEquals("{\"identifier\":null,\"factor\":null}", mvcResult.getResponse()
+                .getContentAsString(), false);
     }
 }
