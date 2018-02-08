@@ -1,14 +1,35 @@
 package com.example.demo.controllers;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.models.GameChanger;
+import com.example.demo.services.GameChangerException;
+import com.example.demo.services.GameChangerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController()
 public class GameChangerController {
-    @RequestMapping(value = "/game", method = RequestMethod.GET, produces = "text/plain")
+
+    @Autowired
+    private GameChangerService gameChanger;
+
+    @GetMapping(value = "/game", produces = MediaType.TEXT_PLAIN_VALUE)
     public String info() {
         return "Welcome to the game changer!";
+    }
+
+    @PostMapping(value = "/game")
+    public ResponseEntity<Void> createGameChanger(@RequestBody GameChanger gameChanger) throws GameChangerException {
+        GameChanger created = this.gameChanger.changeTheGame(gameChanger);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path(
+                "/{id}").buildAndExpand(created.getIdentifier()).toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }
