@@ -1,0 +1,18 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 10
+      arrivalRate: 5
+scenarios:
+  - name: "Create and find"
+    flow:
+      - post:
+          url: "/game"
+          json:
+            factor: 10
+          capture:
+            - header: "location"
+              as: "location"
+      - get:
+          url: "{{ location }}"
+      - think: 3

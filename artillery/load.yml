@@ -1,0 +1,28 @@
+config:
+  target: "http://localhost:8080"
+  http:
+    timeout: 15
+  phases:
+    - duration: 60
+      arrivalRate: 5
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+    - duration: 600
+      arrivalRate: 50
+  defaults:
+    headers:
+      content-type: 'application/json'
+  
+scenarios:
+  - name: "Create and find"
+    flow:
+      - post:
+          url: "/game"
+          json:
+            factor: 10
+          capture:
+            - header: "location"
+              as: "location"
+      - get:
+          url: "{{ location }}"
