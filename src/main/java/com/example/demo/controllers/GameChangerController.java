@@ -35,7 +35,7 @@ public class GameChangerController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping(value = "game/{identifier}")
+    @GetMapping(value = "/game/{identifier}")
     public GameChanger findGameChanger(@PathVariable Integer identifier) throws ExecutionException, InterruptedException, GameChangerException {
         Future<GameChanger> gameChangerFuture = this.gameChanger.getTheGameChanger(identifier);
 
